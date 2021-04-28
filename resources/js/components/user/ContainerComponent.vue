@@ -1,239 +1,224 @@
 <template>
 <div>
     <v-container>
-        <v-simple-table height="300px">
+        <v-simple-table fixed-header height="300px">
             <template v-slot:default>
                 <thead>
                     <tr>
-
-                        <th class="text-left">options</th>
-                        <th class="text-left">Name</th>
-                        <th class="text-left">Email</th>
-                        <th class="text-left">Created_at</th>
-                        <th class="text-left">Updated_at</th>
+                        <th class="text-left">
+                            Opciones
+                        </th>
+                        <th class="text-left">
+                            Nombre
+                        </th>
+                        <th class="text-left">
+                            Email
+                        </th>
+                        <th class="text-left">
+                            Creación
+                        </th>
+                        <th class="text-left">
+                            Actualización
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="item in listUsers" :key="item.id">
-                        <td>
-                            <v-btn>
-                                <v-icon color="orange" @click="openModal('update', item)">
-                                    mdi-pencil
-                                </v-icon>
+                        <td style="width:170px;">
+                            <v-btn @click="openModal('update', item)">
+                                <v-icon @click="openModal('update', item)" color="green">mdi-pencil-outline</v-icon>
                             </v-btn>
-
+                            <v-btn>
+                                <v-icon color="red">mdi-delete-sweep-outline</v-icon>
+                            </v-btn>
                         </td>
                         <td>{{ item.name }}</td>
                         <td>{{ item.email }}</td>
                         <td>{{ item.created_at }}</td>
-                        <td>{{ item.updated_at }}</td>
+                        <td>{{ item.updated_at }}</td>                        
                     </tr>
                 </tbody>
+                <pre> {{dataResponse}} </pre>
+
             </template>
         </v-simple-table>
     </v-container>
-    <v-btn bottom color="green" dark fab fixed right @click="openModal('insert')">
+    <v-btn color="green" bottom dark fab fixed right @click="openModal('insert')">
         <v-icon>mdi-plus</v-icon>
     </v-btn>
 
-    <v-dialog v-model=" dialog" width="800">
+    <!-- inicio dialog -->
+    <v-dialog v-model="dialog" width="800">
         <v-card>
             <v-card-title class="teal darken-4" style="color: #fff">
-                {{ title }}
+                {{title}}
             </v-card-title>
 
             <v-container>
                 <v-row class="mx-2">
                     <v-col cols="12" md="4">
-                        <v-text-field label="Name" v-model="user.name">
-                        </v-text-field>
+                        <v-text-field label="Nombre" v-model="user.name"></v-text-field>
                     </v-col>
-
                     <v-col cols="12" md="4">
-                        <v-text-field label="Email" v-model="user.email">
-                        </v-text-field>
+                        <v-text-field label="Email" v-model="user.email"></v-text-field>
                     </v-col>
-                    
-                    <template v-if="actionType == 1">
+                    <template v-if="actionType==1">
                         <v-col cols="12" md="4">
-                            <v-text-field label="Password" v-model="user.password" :type="false ? 'text' : 'password'">
-                            </v-text-field>
+                            <v-text-field label="Password" v-model="user.password" :type="false ? 'text' : 'password'"></v-text-field>
                         </v-col>
                     </template>
-                    <template v-else-if="actionType == 2">
+                    <template v-else-if="actionType==2">
                         <v-col cols="12" md="4">
-                            <v-select
-                                item-text="description"
-                                item-value="id"
-                                :items="listOptions"
-                                v-model="checkPassport"
-                                label="Desea Cambiar Contraseña"
-                            >
+                            <v-select item-text="description" item-value="id" :items="listOptions" v-model="checkPassword" label="¿Desea cambiar contraseña?">
                             </v-select>
                         </v-col>
-                        <v-col v-if="checkPassport == 1" cols="12" md="4">
-                            <v-text-field label="New Password" v-model="user.password" :type="false ? 'text' : 'password'">
-                            </v-text-field>
+
+                        <v-col cols="12" md="4" v-if="checkPassword==1">
+                            <v-text-field label="New Password" v-model="user.password" :type="false ? 'text' : 'password'"></v-text-field>
                         </v-col>
                     </template>
-                    
-                </v-row>
-                <v-row>
-                    <div style="width:90%; justify-content: center; margin: auto; color: red">
-                        <h5 class="text-center">{{ message }}</h5>
-                    </div>
 
-                    <div style="width:90%; justify-content: center; margin: auto; color: red" 
-                    v-for="(item,id) in errorMessage" :key="id">
-                        <h5 class="text-center">{{ item }}</h5>
-                    </div>
                 </v-row>
-                <pre>{{user}}</pre>
+                <div style="width: 90%; justify-content: center; margin: auto; color: red" v-for="(item, id) in errorMessage" :key="id">
+                    <h6 class="text-center">{{item}}</h6>
+                </div>
+                <div class="text-error">{{message}}</div>
             </v-container>
+
+            <v-divider></v-divider>
 
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn
-                    v-if="actionType ==1" 
-                    color="#15638A" 
-                    text 
-                    @click="save()"
-                >
-                    Guardar
-                </v-btn>
-                <v-btn
-                    v-if="actionType ==2" 
-                    color="#15638A"
-                    text 
-                    @click="update()"
-                >
-                    Actualizar
-                </v-btn>
+                    <v-btn color="primary" text @click="save()" v-if="actionType==1">
+                        Guardar
+                    </v-btn>
+                    <v-btn color="primary" text @click="update()" v-if="actionType==2">
+                        Actualizar
+                    </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
+    <!-- fin dialog -->
+
 </div>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import {
+    mapState,
+    mapActions
+} from 'vuex'
+import axios from 'axios'
+
 export default {
     data() {
         return {
             actionType: 0,
             title: '',
             dialog: false,
-            errorUser: 0,
             errorMessage: [],
-
+            errorUser:0,
             user: {
-                id: 0,
+                id:0,
                 name: '',
                 email: '',
                 password: ''
-
             },
-            listOptions: [
-                {id:1, description:'Si'},
-                {id:2, description:'No'},
+            listOptions: [{
+                    id: 1,
+                    description: 'Si'
+                },
+                {
+                    id: 2,
+                    description: 'No'
+                },
             ],
-            checkPassport: 2
+            checkPassword: 2
         }
     },
 
     computed: {
-        ...mapState('User', ['listUsers', 'message', 'dataResponse']),
-
+        //esto esa para poder traer la iformación que devuelve la petición /store/module/users/getUsers
+        ...mapState('users', ['listUsers', 'message', 'dataResponse'])
     },
 
-    moununted() {
-        this.$store.dispatch('user/getList');
+    mounted() {
+        //esto para cuando se monte el componente
+        this.$store.dispatch('users/getUsers');
     },
 
     methods: {
-        ...mapActions('user', ['getList','saveUser', 'updateUser']),
+        ...mapActions('users', ['getUsers', 'saveUser','updateUser']),
+
         openModal(action, data) {
             switch (action) {
                 case 'insert': {
-                    this.actionType = 1 
+                    this.actionType = 1
                     this.dialog = true
-                    this.title = 'NUEVO USUARIO'
-                    this.errorMessage = []
-                    this.errorUser = 0
-                    this.user.id = 0
-                    this.user.name = ''
-                    this.user.email = ''
-                    this.user.password = ''
-                    break
+                    this.title = "Nuevo Usuario"
+                    this.errorMessage=[]
+                    this.errorUser=0
+                    this.user.name = ""
+                    this.user.email = ""
+                    this.user.password = ""
+                    break;
                 }
-
                 case 'update': {
                     this.actionType = 2
                     this.dialog = true
-                    this.title = 'EDITAR USUARIO'
-                    this.user.id = data.id
+                    this.title = "Editar Usuario"
+                    this.errorMessage=[]
+                    this.errorUser=0                    
                     this.user.name = data.name
                     this.user.email = data.email
-                    break
+                    this.user.password = data.password
+                    this.user.id= data.id
+                    break;
                 }
             }
-
         },
 
-        validate() {
-            this.errorUser = 0
-            this.errorMessage = []
-            if(this.actionType == 1) {
-                if(!this.user.name){ this.errorMessage.push("Digite Nombre usuario")}
-                if(!this.user.email){ this.errorMessage.push("Digite Email usuario")}
-                if(!this.user.password){ this.errorMessage.push("Digite Contraseña usuario")}
-            } else if(this.actionType == 2){
-                if(!this.user.name){ this.errorMessage.push("Digite Nombre usuario")}
-                if(!this.user.email){ this.errorMessage.push("Digite Email usuario")}
-                if(this.checkPassport == 1){ 
-                    if(!this.user.password){ this.errorMessage.push("Digite Contraseña usuario")}
-                }
+        validate(){
+            this.errorMessage=[]
+            this.errorUser=0
+
+            if (this.actionType==1 || this.checkPassword==1) {
+                if(!this.user.password){this.errorMessage.push("Digite password de usuario")}
             }
-            
-            if(!this.errorMessage.l) {this.errorUser = 1}
+            if(!this.user.name){this.errorMessage.push("Digite nombre de usuario")}
+            if(!this.user.email){this.errorMessage.push("Digite email de usuario")}
+            if(this.errorMessage.length){this.errorUser=1}
             return this.errorUser
-        },
 
+        },
         save() {
-            
-            if(this.validate()){
+            if (this.validate()) {
                 return
             }
 
-            this.errorMessage = []
-            this.$store.dispatch('User/saveUser', this.user)
-            .then(() => {
-                this.$store.dispatch('User/getList')
-                this.dialog = false
+            this.errorMessage = [];
+            this.saveUser(this.user)
+                .then(() => {
+                    this.dialog = false
+                    this.getUsers()
+                }).catch((e) => {
+                    this.errorMessage = e.response.data.errors;
+                })
+        },
+        update(){
+            if (this.validate()) {
+                return
+            }
+            this.updateUser(this.user)
+            .then(()=>{
+                this.getUsers()
+                this.dialog=false
             }).catch((e) => {
                 this.errorMessage = e.response.data.errors;
             })
         },
 
-        update() {
-            if(this.validate()){
-                return
-            }
-            
-            this.errorMessage = []
-            this.$store.dispatch('User/updateUser', this.user)
-            .then(() => {
-                this.$store.dispatch('User/getList')
-                this.dialog = false
-            }).catch((e) => {
-                this.errorMessage = e.response.data.errors;
-            })
-        }
-    },
-    
-    mounted() {
-        this.$store.dispatch('User/getList');
-    },
 
+    }
 }
 </script>

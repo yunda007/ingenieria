@@ -1,13 +1,12 @@
-
 require('./bootstrap');
 
 window.Vue = require('vue');
 import Vuetify from "../plugins/vuetify"
-import store from "./store"
-import router from "./router"
-import axios from 'axios'
+import store from "../store/"
+import router from "../router/"
+import axios from 'axios';
 
-axios.defaults.baseURL = 'http://localhost/ingenieria/public/api/'
+axios.defaults.baseURL="http://localhost/ingenieria/public/api"
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('home-component', require('./components/HomeComponent.vue').default);
@@ -19,3 +18,4 @@ const app = new Vue({
     store,
     router
 });
+
